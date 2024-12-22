@@ -462,30 +462,34 @@ class AnimationController:
         self._sacn_perf_avg += (sacn_time - self._last_sacn_time)
         self._last_sacn_time = sacn_time
 
-        max_index = min(len(packet.dmxData), MAX_USABLE_CHANNELS_PER_UNIVERSE)
-        data = [x / 255.0 for x in packet.dmxData[:max_index]]
-        new_buffer_data = list(zip_longest(*(iter(data),) * 3))
-        led_start = (packet.universe - 1) * MAX_LEDS_PER_UNIVERSE
-        led_end = led_start + math.floor(len(packet.dmxData) / 3) - 1 # with one LED's worth of data, start == end
-
         self._sacn_count += 1
         if self._sacn_count % 100 == 0:
             print('Average sACN rate (packets/s): {}'.format(1 / (self._sacn_perf_avg / 100)))
             self._sacn_perf_avg = 0
 
+        dmx_led_count = math.floor(len(packet.dmxData) / 3)
+        led_start = (packet.universe - 1) * MAX_LEDS_PER_UNIVERSE
+        led_end = led_start + dmx_led_count - 1 # with one LED's worth of data, start == end
+
         if led_start >= self._led_count:
             return
 
         safe_led_end = min(self._led_count - 1, led_end)
+        safe_led_count = (safe_led_end - led_start) + 1
         current_len = len(self._sacn_buffer)
         needed_len = safe_led_end + 1
 
-        if current_len < needed_len:
-            print(f"current_len = {current_len}, needed_len = {needed_len}, resizing")
-            needed_extra = needed_len - current_len
-            self._sacn_buffer.extend([(0, 0, 0)] * needed_extra)
+        while current_len < needed_len:
+            print(f"current_len = {current_len}, needed_len = {needed_len}, resizing to {current_len * 2}")
+            # double the buffer size
+            self._sacn_buffer.extend([(0, 0, 0)] * current_len)
 
-        self._sacn_buffer[led_start:safe_led_end] = list(zip_longest(*(iter(data),) * 3))
+        for i in range(0, safe_led_count):
+            dmx_index = i * 3
+            r = packet.dmxData[dmx_index] / 255.0
+            g = packet.dmxData[dmx_index + 1] / 255.0
+            b = packet.dmxData[dmx_index + 2] / 255.0
+            self._sacn_buffer[led_start + i] = (r, g, b)
 
     def clear_leds(self):
         'Turn all LEDs off'
