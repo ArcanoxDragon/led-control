@@ -1608,14 +1608,6 @@ SwigPyObject_repr(SwigPyObject *v, PyObject *args)
   return repr;  
 }
 
-/* We need a version taking two PyObject* parameters so it's a valid
- * PyCFunction to use in swigobject_methods[]. */
-SWIGRUNTIME PyObject *
-SwigPyObject_repr2(PyObject *v, PyObject *SWIGUNUSEDPARM(args))
-{
-  return SwigPyObject_repr((SwigPyObject*)v);
-}
-
 SWIGRUNTIME int
 SwigPyObject_compare(SwigPyObject *v, SwigPyObject *w)
 {
@@ -1745,7 +1737,11 @@ SwigPyObject_append(PyObject* v, PyObject* next)
 }
 
 SWIGRUNTIME PyObject* 
+#ifdef METH_NOARGS
+SwigPyObject_next(PyObject* v)
+#else
 SwigPyObject_next(PyObject* v, PyObject *SWIGUNUSEDPARM(args))
+#endif
 {
   SwigPyObject *sobj = (SwigPyObject *) v;
   if (sobj->next) {    
@@ -1779,20 +1775,6 @@ SwigPyObject_acquire(PyObject* v, PyObject *SWIGUNUSEDPARM(args))
   sobj->own = SWIG_POINTER_OWN;
   return SWIG_Py_Void();
 }
-
-#ifdef METH_NOARGS
-static PyObject*
-SwigPyObject_disown2(PyObject* v, PyObject *SWIGUNUSEDPARM(args))
-{
-  return SwigPyObject_disown(v);
-}
-
-static PyObject*
-SwigPyObject_acquire2(PyObject* v, PyObject *SWIGUNUSEDPARM(args))
-{
-  return SwigPyObject_acquire(v);
-}
-#endif
 
 SWIGINTERN PyObject*
 SwigPyObject_own(PyObject *v, PyObject *args)
@@ -1834,12 +1816,12 @@ SwigPyObject_own(PyObject *v, PyObject *args)
 #ifdef METH_O
 static PyMethodDef
 swigobject_methods[] = {
-  {(char *)"disown",  (PyCFunction)SwigPyObject_disown2, METH_NOARGS,  (char *)"releases ownership of the pointer"},
-  {(char *)"acquire", (PyCFunction)SwigPyObject_acquire2,METH_NOARGS,  (char *)"acquires ownership of the pointer"},
+  {(char *)"disown",  (PyCFunction)SwigPyObject_disown,  METH_NOARGS,  (char *)"releases ownership of the pointer"},
+  {(char *)"acquire", (PyCFunction)SwigPyObject_acquire, METH_NOARGS,  (char *)"acquires ownership of the pointer"},
   {(char *)"own",     (PyCFunction)SwigPyObject_own,     METH_VARARGS, (char *)"returns/sets ownership of the pointer"},
   {(char *)"append",  (PyCFunction)SwigPyObject_append,  METH_O,       (char *)"appends another 'this' object"},
   {(char *)"next",    (PyCFunction)SwigPyObject_next,    METH_NOARGS,  (char *)"returns the next 'this' object"},
-  {(char *)"__repr__",(PyCFunction)SwigPyObject_repr2,   METH_NOARGS,  (char *)"returns object representation"},
+  {(char *)"__repr__",(PyCFunction)SwigPyObject_repr,    METH_NOARGS,  (char *)"returns object representation"},
   {0, 0, 0, 0}  
 };
 #else
@@ -1850,7 +1832,7 @@ swigobject_methods[] = {
   {(char *)"own",     (PyCFunction)SwigPyObject_own,     METH_VARARGS,  (char *)"returns/sets ownership of the pointer"},
   {(char *)"append",  (PyCFunction)SwigPyObject_append,  METH_VARARGS,  (char *)"appends another 'this' object"},
   {(char *)"next",    (PyCFunction)SwigPyObject_next,    METH_VARARGS,  (char *)"returns the next 'this' object"},
-  {(char *)"__repr__",(PyCFunction)SwigPyObject_repr,    METH_VARARGS,  (char *)"returns object representation"},
+  {(char *)"__repr__",(PyCFunction)SwigPyObject_repr,   METH_VARARGS,  (char *)"returns object representation"},
   {0, 0, 0, 0}  
 };
 #endif
@@ -3002,22 +2984,23 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_color_hsv_float swig_types[2]
 #define SWIGTYPE_p_color_rgb swig_types[3]
 #define SWIGTYPE_p_color_rgb_float swig_types[4]
-#define SWIGTYPE_p_float swig_types[5]
-#define SWIGTYPE_p_int swig_types[6]
-#define SWIGTYPE_p_long_long swig_types[7]
-#define SWIGTYPE_p_rpi_hw_t swig_types[8]
-#define SWIGTYPE_p_short swig_types[9]
-#define SWIGTYPE_p_signed_char swig_types[10]
-#define SWIGTYPE_p_unsigned_char swig_types[11]
-#define SWIGTYPE_p_unsigned_int swig_types[12]
-#define SWIGTYPE_p_unsigned_long_long swig_types[13]
-#define SWIGTYPE_p_unsigned_short swig_types[14]
-#define SWIGTYPE_p_ws2811_channel_t swig_types[15]
-#define SWIGTYPE_p_ws2811_device swig_types[16]
-#define SWIGTYPE_p_ws2811_return_t swig_types[17]
-#define SWIGTYPE_p_ws2811_t swig_types[18]
-static swig_type_info *swig_types[20];
-static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
+#define SWIGTYPE_p_color_rgbw_float swig_types[5]
+#define SWIGTYPE_p_float swig_types[6]
+#define SWIGTYPE_p_int swig_types[7]
+#define SWIGTYPE_p_long_long swig_types[8]
+#define SWIGTYPE_p_rpi_hw_t swig_types[9]
+#define SWIGTYPE_p_short swig_types[10]
+#define SWIGTYPE_p_signed_char swig_types[11]
+#define SWIGTYPE_p_unsigned_char swig_types[12]
+#define SWIGTYPE_p_unsigned_int swig_types[13]
+#define SWIGTYPE_p_unsigned_long_long swig_types[14]
+#define SWIGTYPE_p_unsigned_short swig_types[15]
+#define SWIGTYPE_p_ws2811_channel_t swig_types[16]
+#define SWIGTYPE_p_ws2811_device swig_types[17]
+#define SWIGTYPE_p_ws2811_return_t swig_types[18]
+#define SWIGTYPE_p_ws2811_t swig_types[19]
+static swig_type_info *swig_types[21];
+static swig_module_info swig_module = {swig_types, 20, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -6509,6 +6492,522 @@ SWIGINTERN PyObject *color_rgb_float_swigregister(PyObject *SWIGUNUSEDPARM(self)
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_color_rgbw_float_red_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_red_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_red_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_red_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->red = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_red_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_red_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_red_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->red);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_r_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_r_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_r_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_r_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->r = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_r_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_r_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_r_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->r);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_green_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_green_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_green_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_green_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->green = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_green_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_green_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_green_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->green);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_g_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_g_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_g_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_g_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->g = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_g_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_g_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_g_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->g);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_blue_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_blue_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_blue_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_blue_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->blue = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_blue_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_blue_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_blue_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->blue);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_b_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_b_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_b_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_b_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->b = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_b_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_b_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_b_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->b);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_white_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_white_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_white_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_white_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->white = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_white_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_white_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_white_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->white);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_w_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_w_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_w_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "color_rgbw_float_w_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->w = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_w_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_w_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_w_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float) ((arg1)->w);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_raw_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  float *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:color_rgbw_float_raw_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_raw_set" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "color_rgbw_float_raw_set" "', argument " "2"" of type '" "float [4]""'"); 
+  } 
+  arg2 = (float *)(argp2);
+  {
+    if (arg2) {
+      size_t ii = 0;
+      for (; ii < (size_t)4; ++ii) *(float *)&arg1->raw[ii] = *((float *)arg2 + ii);
+    } else {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""raw""' of type '""float [4]""'");
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_color_rgbw_float_raw_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:color_rgbw_float_raw_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "color_rgbw_float_raw_get" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  result = (float *)(float *) ((arg1)->raw);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_float, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_color_rgbw_float(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_color_rgbw_float")) SWIG_fail;
+  result = (struct color_rgbw_float *)calloc(1, sizeof(struct color_rgbw_float));
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_color_rgbw_float, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_color_rgbw_float(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct color_rgbw_float *arg1 = (struct color_rgbw_float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_color_rgbw_float",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_color_rgbw_float, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_color_rgbw_float" "', argument " "1"" of type '" "struct color_rgbw_float *""'"); 
+  }
+  arg1 = (struct color_rgbw_float *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *color_rgbw_float_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_color_rgbw_float, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN int Swig_var_debug_set(PyObject *_val SWIGUNUSED) {
   SWIG_Error(SWIG_AttributeError,"Variable debug is read-only.");
   return 1;
@@ -6976,6 +7475,43 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_render_rgbw_float(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  color_rgbw_float arg1 ;
+  float arg2 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  uint32_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:render_rgbw_float",&obj0,&obj1)) SWIG_fail;
+  {
+    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_color_rgbw_float,  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "render_rgbw_float" "', argument " "1"" of type '" "color_rgbw_float""'"); 
+    }  
+    if (!argp1) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "render_rgbw_float" "', argument " "1"" of type '" "color_rgbw_float""'");
+    } else {
+      arg1 = *((color_rgbw_float *)(argp1));
+    }
+  }
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "render_rgbw_float" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  result = (uint32_t)render_rgbw_float(arg1,arg2);
+  resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_ws2811_hsv_render_all_float(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ws2811_t *arg1 = (ws2811_t *) 0 ;
@@ -7389,6 +7925,76 @@ SWIGINTERN PyObject *_wrap_ws2811_rgb_render_range_float(PyObject *SWIGUNUSEDPAR
   } 
   arg9 = (uint8_t)(val9);
   ws2811_rgb_render_range_float(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+  resultobj = SWIG_Py_Void();
+  {
+    if (arg2) free(arg2);
+  }
+  return resultobj;
+fail:
+  {
+    if (arg2) free(arg2);
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ws2811_rgbw_render_range_float(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ws2811_channel_t *arg1 = (ws2811_channel_t *) 0 ;
+  color_rgbw_float *arg2 ;
+  int arg3 ;
+  int arg4 ;
+  float arg5 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  float val5 ;
+  int ecode5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:ws2811_rgbw_render_range_float",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ws2811_channel_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ws2811_rgbw_render_range_float" "', argument " "1"" of type '" "ws2811_channel_t *""'"); 
+  }
+  arg1 = (ws2811_channel_t *)(argp1);
+  {
+    int len = PyObject_Length(obj1);
+    arg2 = malloc(sizeof(color_rgbw_float) * len);
+    int i, j;
+    for (i = 0; i < len; i++) {
+      PyObject *o = PySequence_GetItem(obj1, i);
+      for (j = 0; j < 4; j++) {
+        PyObject *o2 = PySequence_GetItem(o, j);
+        arg2[i].raw[j] = (float)PyFloat_AsDouble(o2);
+        Py_DECREF(o2);
+      }
+      Py_DECREF(o);
+    }
+  }
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ws2811_rgbw_render_range_float" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "ws2811_rgbw_render_range_float" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = (int)(val4);
+  ecode5 = SWIG_AsVal_float(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "ws2811_rgbw_render_range_float" "', argument " "5"" of type '" "float""'");
+  } 
+  arg5 = (float)(val5);
+  ws2811_rgbw_render_range_float(arg1,arg2,arg3,arg4,arg5);
   resultobj = SWIG_Py_Void();
   {
     if (arg2) free(arg2);
@@ -7990,158 +8596,181 @@ fail:
 
 
 static PyMethodDef SwigMethods[] = {
-	 { "SWIG_PyInstanceMethod_New", SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { "ws2811_channel_t_gpionum_set", _wrap_ws2811_channel_t_gpionum_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gpionum_get", _wrap_ws2811_channel_t_gpionum_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_invert_set", _wrap_ws2811_channel_t_invert_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_invert_get", _wrap_ws2811_channel_t_invert_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_count_set", _wrap_ws2811_channel_t_count_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_count_get", _wrap_ws2811_channel_t_count_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_strip_type_set", _wrap_ws2811_channel_t_strip_type_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_strip_type_get", _wrap_ws2811_channel_t_strip_type_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_leds_set", _wrap_ws2811_channel_t_leds_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_leds_get", _wrap_ws2811_channel_t_leds_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_brightness_set", _wrap_ws2811_channel_t_brightness_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_brightness_get", _wrap_ws2811_channel_t_brightness_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_wshift_set", _wrap_ws2811_channel_t_wshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_wshift_get", _wrap_ws2811_channel_t_wshift_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_rshift_set", _wrap_ws2811_channel_t_rshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_rshift_get", _wrap_ws2811_channel_t_rshift_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gshift_set", _wrap_ws2811_channel_t_gshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gshift_get", _wrap_ws2811_channel_t_gshift_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_bshift_set", _wrap_ws2811_channel_t_bshift_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_bshift_get", _wrap_ws2811_channel_t_bshift_get, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gamma_set", _wrap_ws2811_channel_t_gamma_set, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_gamma_get", _wrap_ws2811_channel_t_gamma_get, METH_VARARGS, NULL},
-	 { "new_ws2811_channel_t", _wrap_new_ws2811_channel_t, METH_VARARGS, NULL},
-	 { "delete_ws2811_channel_t", _wrap_delete_ws2811_channel_t, METH_VARARGS, NULL},
-	 { "ws2811_channel_t_swigregister", ws2811_channel_t_swigregister, METH_VARARGS, NULL},
-	 { "ws2811_t_render_wait_time_set", _wrap_ws2811_t_render_wait_time_set, METH_VARARGS, NULL},
-	 { "ws2811_t_render_wait_time_get", _wrap_ws2811_t_render_wait_time_get, METH_VARARGS, NULL},
-	 { "ws2811_t_device_set", _wrap_ws2811_t_device_set, METH_VARARGS, NULL},
-	 { "ws2811_t_device_get", _wrap_ws2811_t_device_get, METH_VARARGS, NULL},
-	 { "ws2811_t_rpi_hw_set", _wrap_ws2811_t_rpi_hw_set, METH_VARARGS, NULL},
-	 { "ws2811_t_rpi_hw_get", _wrap_ws2811_t_rpi_hw_get, METH_VARARGS, NULL},
-	 { "ws2811_t_freq_set", _wrap_ws2811_t_freq_set, METH_VARARGS, NULL},
-	 { "ws2811_t_freq_get", _wrap_ws2811_t_freq_get, METH_VARARGS, NULL},
-	 { "ws2811_t_dmanum_set", _wrap_ws2811_t_dmanum_set, METH_VARARGS, NULL},
-	 { "ws2811_t_dmanum_get", _wrap_ws2811_t_dmanum_get, METH_VARARGS, NULL},
-	 { "ws2811_t_channel_set", _wrap_ws2811_t_channel_set, METH_VARARGS, NULL},
-	 { "ws2811_t_channel_get", _wrap_ws2811_t_channel_get, METH_VARARGS, NULL},
-	 { "new_ws2811_t", _wrap_new_ws2811_t, METH_VARARGS, NULL},
-	 { "delete_ws2811_t", _wrap_delete_ws2811_t, METH_VARARGS, NULL},
-	 { "ws2811_t_swigregister", ws2811_t_swigregister, METH_VARARGS, NULL},
-	 { "ws2811_init", _wrap_ws2811_init, METH_VARARGS, NULL},
-	 { "ws2811_fini", _wrap_ws2811_fini, METH_VARARGS, NULL},
-	 { "ws2811_render", _wrap_ws2811_render, METH_VARARGS, NULL},
-	 { "ws2811_wait", _wrap_ws2811_wait, METH_VARARGS, NULL},
-	 { "ws2811_get_return_t_str", _wrap_ws2811_get_return_t_str, METH_VARARGS, NULL},
-	 { "ws2811_set_custom_gamma_factor", _wrap_ws2811_set_custom_gamma_factor, METH_VARARGS, NULL},
-	 { "color_hsv_hue_set", _wrap_color_hsv_hue_set, METH_VARARGS, NULL},
-	 { "color_hsv_hue_get", _wrap_color_hsv_hue_get, METH_VARARGS, NULL},
-	 { "color_hsv_h_set", _wrap_color_hsv_h_set, METH_VARARGS, NULL},
-	 { "color_hsv_h_get", _wrap_color_hsv_h_get, METH_VARARGS, NULL},
-	 { "color_hsv_saturation_set", _wrap_color_hsv_saturation_set, METH_VARARGS, NULL},
-	 { "color_hsv_saturation_get", _wrap_color_hsv_saturation_get, METH_VARARGS, NULL},
-	 { "color_hsv_sat_set", _wrap_color_hsv_sat_set, METH_VARARGS, NULL},
-	 { "color_hsv_sat_get", _wrap_color_hsv_sat_get, METH_VARARGS, NULL},
-	 { "color_hsv_s_set", _wrap_color_hsv_s_set, METH_VARARGS, NULL},
-	 { "color_hsv_s_get", _wrap_color_hsv_s_get, METH_VARARGS, NULL},
-	 { "color_hsv_value_set", _wrap_color_hsv_value_set, METH_VARARGS, NULL},
-	 { "color_hsv_value_get", _wrap_color_hsv_value_get, METH_VARARGS, NULL},
-	 { "color_hsv_val_set", _wrap_color_hsv_val_set, METH_VARARGS, NULL},
-	 { "color_hsv_val_get", _wrap_color_hsv_val_get, METH_VARARGS, NULL},
-	 { "color_hsv_v_set", _wrap_color_hsv_v_set, METH_VARARGS, NULL},
-	 { "color_hsv_v_get", _wrap_color_hsv_v_get, METH_VARARGS, NULL},
-	 { "color_hsv_raw_set", _wrap_color_hsv_raw_set, METH_VARARGS, NULL},
-	 { "color_hsv_raw_get", _wrap_color_hsv_raw_get, METH_VARARGS, NULL},
-	 { "new_color_hsv", _wrap_new_color_hsv, METH_VARARGS, NULL},
-	 { "delete_color_hsv", _wrap_delete_color_hsv, METH_VARARGS, NULL},
-	 { "color_hsv_swigregister", color_hsv_swigregister, METH_VARARGS, NULL},
-	 { "color_hsv_float_hue_set", _wrap_color_hsv_float_hue_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_hue_get", _wrap_color_hsv_float_hue_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_h_set", _wrap_color_hsv_float_h_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_h_get", _wrap_color_hsv_float_h_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_saturation_set", _wrap_color_hsv_float_saturation_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_saturation_get", _wrap_color_hsv_float_saturation_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_sat_set", _wrap_color_hsv_float_sat_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_sat_get", _wrap_color_hsv_float_sat_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_s_set", _wrap_color_hsv_float_s_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_s_get", _wrap_color_hsv_float_s_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_value_set", _wrap_color_hsv_float_value_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_value_get", _wrap_color_hsv_float_value_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_val_set", _wrap_color_hsv_float_val_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_val_get", _wrap_color_hsv_float_val_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_v_set", _wrap_color_hsv_float_v_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_v_get", _wrap_color_hsv_float_v_get, METH_VARARGS, NULL},
-	 { "color_hsv_float_raw_set", _wrap_color_hsv_float_raw_set, METH_VARARGS, NULL},
-	 { "color_hsv_float_raw_get", _wrap_color_hsv_float_raw_get, METH_VARARGS, NULL},
-	 { "new_color_hsv_float", _wrap_new_color_hsv_float, METH_VARARGS, NULL},
-	 { "delete_color_hsv_float", _wrap_delete_color_hsv_float, METH_VARARGS, NULL},
-	 { "color_hsv_float_swigregister", color_hsv_float_swigregister, METH_VARARGS, NULL},
-	 { "color_rgb_red_set", _wrap_color_rgb_red_set, METH_VARARGS, NULL},
-	 { "color_rgb_red_get", _wrap_color_rgb_red_get, METH_VARARGS, NULL},
-	 { "color_rgb_r_set", _wrap_color_rgb_r_set, METH_VARARGS, NULL},
-	 { "color_rgb_r_get", _wrap_color_rgb_r_get, METH_VARARGS, NULL},
-	 { "color_rgb_green_set", _wrap_color_rgb_green_set, METH_VARARGS, NULL},
-	 { "color_rgb_green_get", _wrap_color_rgb_green_get, METH_VARARGS, NULL},
-	 { "color_rgb_g_set", _wrap_color_rgb_g_set, METH_VARARGS, NULL},
-	 { "color_rgb_g_get", _wrap_color_rgb_g_get, METH_VARARGS, NULL},
-	 { "color_rgb_blue_set", _wrap_color_rgb_blue_set, METH_VARARGS, NULL},
-	 { "color_rgb_blue_get", _wrap_color_rgb_blue_get, METH_VARARGS, NULL},
-	 { "color_rgb_b_set", _wrap_color_rgb_b_set, METH_VARARGS, NULL},
-	 { "color_rgb_b_get", _wrap_color_rgb_b_get, METH_VARARGS, NULL},
-	 { "color_rgb_raw_set", _wrap_color_rgb_raw_set, METH_VARARGS, NULL},
-	 { "color_rgb_raw_get", _wrap_color_rgb_raw_get, METH_VARARGS, NULL},
-	 { "new_color_rgb", _wrap_new_color_rgb, METH_VARARGS, NULL},
-	 { "delete_color_rgb", _wrap_delete_color_rgb, METH_VARARGS, NULL},
-	 { "color_rgb_swigregister", color_rgb_swigregister, METH_VARARGS, NULL},
-	 { "color_rgb_float_red_set", _wrap_color_rgb_float_red_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_red_get", _wrap_color_rgb_float_red_get, METH_VARARGS, NULL},
-	 { "color_rgb_float_r_set", _wrap_color_rgb_float_r_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_r_get", _wrap_color_rgb_float_r_get, METH_VARARGS, NULL},
-	 { "color_rgb_float_green_set", _wrap_color_rgb_float_green_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_green_get", _wrap_color_rgb_float_green_get, METH_VARARGS, NULL},
-	 { "color_rgb_float_g_set", _wrap_color_rgb_float_g_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_g_get", _wrap_color_rgb_float_g_get, METH_VARARGS, NULL},
-	 { "color_rgb_float_blue_set", _wrap_color_rgb_float_blue_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_blue_get", _wrap_color_rgb_float_blue_get, METH_VARARGS, NULL},
-	 { "color_rgb_float_b_set", _wrap_color_rgb_float_b_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_b_get", _wrap_color_rgb_float_b_get, METH_VARARGS, NULL},
-	 { "color_rgb_float_raw_set", _wrap_color_rgb_float_raw_set, METH_VARARGS, NULL},
-	 { "color_rgb_float_raw_get", _wrap_color_rgb_float_raw_get, METH_VARARGS, NULL},
-	 { "new_color_rgb_float", _wrap_new_color_rgb_float, METH_VARARGS, NULL},
-	 { "delete_color_rgb_float", _wrap_delete_color_rgb_float, METH_VARARGS, NULL},
-	 { "color_rgb_float_swigregister", color_rgb_float_swigregister, METH_VARARGS, NULL},
-	 { "ws2811_channel_get", _wrap_ws2811_channel_get, METH_VARARGS, NULL},
-	 { "ws2811_led_get", _wrap_ws2811_led_get, METH_VARARGS, NULL},
-	 { "ws2811_led_set", _wrap_ws2811_led_set, METH_VARARGS, NULL},
-	 { "unpack_rgb", _wrap_unpack_rgb, METH_VARARGS, NULL},
-	 { "pack_rgbw", _wrap_pack_rgbw, METH_VARARGS, NULL},
-	 { "scale_8", _wrap_scale_8, METH_VARARGS, NULL},
-	 { "clamp", _wrap_clamp, METH_VARARGS, NULL},
-	 { "blackbody_to_rgb", _wrap_blackbody_to_rgb, METH_VARARGS, NULL},
-	 { "blackbody_correction_rgb", _wrap_blackbody_correction_rgb, METH_VARARGS, NULL},
-	 { "render_hsv2rgb_rainbow_float", _wrap_render_hsv2rgb_rainbow_float, METH_VARARGS, NULL},
-	 { "render_rgb_float", _wrap_render_rgb_float, METH_VARARGS, NULL},
-	 { "ws2811_hsv_render_all_float", _wrap_ws2811_hsv_render_all_float, METH_VARARGS, NULL},
-	 { "ws2811_hsv_render_range_float", _wrap_ws2811_hsv_render_range_float, METH_VARARGS, NULL},
-	 { "ws2811_rgb_render_all_float", _wrap_ws2811_rgb_render_all_float, METH_VARARGS, NULL},
-	 { "ws2811_rgb_render_range_float", _wrap_ws2811_rgb_render_range_float, METH_VARARGS, NULL},
-	 { "ws2811_rgb_render_calibration", _wrap_ws2811_rgb_render_calibration, METH_VARARGS, NULL},
-	 { "float_to_int_1000", _wrap_float_to_int_1000, METH_VARARGS, NULL},
-	 { "float_to_int_1000_mirror", _wrap_float_to_int_1000_mirror, METH_VARARGS, NULL},
-	 { "wave_pulse", _wrap_wave_pulse, METH_VARARGS, NULL},
-	 { "wave_triangle", _wrap_wave_triangle, METH_VARARGS, NULL},
-	 { "wave_sine", _wrap_wave_sine, METH_VARARGS, NULL},
-	 { "wave_cubic", _wrap_wave_cubic, METH_VARARGS, NULL},
-	 { "plasma_sines", _wrap_plasma_sines, METH_VARARGS, NULL},
-	 { "plasma_sines_octave", _wrap_plasma_sines_octave, METH_VARARGS, NULL},
-	 { "fade", _wrap_fade, METH_VARARGS, NULL},
-	 { "lerp", _wrap_lerp, METH_VARARGS, NULL},
-	 { "grad", _wrap_grad, METH_VARARGS, NULL},
-	 { "perlin_noise_3d", _wrap_perlin_noise_3d, METH_VARARGS, NULL},
-	 { "fbm_noise_3d", _wrap_fbm_noise_3d, METH_VARARGS, NULL},
+	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
+	 { (char *)"ws2811_channel_t_gpionum_set", _wrap_ws2811_channel_t_gpionum_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_gpionum_get", _wrap_ws2811_channel_t_gpionum_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_invert_set", _wrap_ws2811_channel_t_invert_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_invert_get", _wrap_ws2811_channel_t_invert_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_count_set", _wrap_ws2811_channel_t_count_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_count_get", _wrap_ws2811_channel_t_count_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_strip_type_set", _wrap_ws2811_channel_t_strip_type_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_strip_type_get", _wrap_ws2811_channel_t_strip_type_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_leds_set", _wrap_ws2811_channel_t_leds_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_leds_get", _wrap_ws2811_channel_t_leds_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_brightness_set", _wrap_ws2811_channel_t_brightness_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_brightness_get", _wrap_ws2811_channel_t_brightness_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_wshift_set", _wrap_ws2811_channel_t_wshift_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_wshift_get", _wrap_ws2811_channel_t_wshift_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_rshift_set", _wrap_ws2811_channel_t_rshift_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_rshift_get", _wrap_ws2811_channel_t_rshift_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_gshift_set", _wrap_ws2811_channel_t_gshift_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_gshift_get", _wrap_ws2811_channel_t_gshift_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_bshift_set", _wrap_ws2811_channel_t_bshift_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_bshift_get", _wrap_ws2811_channel_t_bshift_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_gamma_set", _wrap_ws2811_channel_t_gamma_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_gamma_get", _wrap_ws2811_channel_t_gamma_get, METH_VARARGS, NULL},
+	 { (char *)"new_ws2811_channel_t", _wrap_new_ws2811_channel_t, METH_VARARGS, NULL},
+	 { (char *)"delete_ws2811_channel_t", _wrap_delete_ws2811_channel_t, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_t_swigregister", ws2811_channel_t_swigregister, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_render_wait_time_set", _wrap_ws2811_t_render_wait_time_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_render_wait_time_get", _wrap_ws2811_t_render_wait_time_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_device_set", _wrap_ws2811_t_device_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_device_get", _wrap_ws2811_t_device_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_rpi_hw_set", _wrap_ws2811_t_rpi_hw_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_rpi_hw_get", _wrap_ws2811_t_rpi_hw_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_freq_set", _wrap_ws2811_t_freq_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_freq_get", _wrap_ws2811_t_freq_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_dmanum_set", _wrap_ws2811_t_dmanum_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_dmanum_get", _wrap_ws2811_t_dmanum_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_channel_set", _wrap_ws2811_t_channel_set, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_channel_get", _wrap_ws2811_t_channel_get, METH_VARARGS, NULL},
+	 { (char *)"new_ws2811_t", _wrap_new_ws2811_t, METH_VARARGS, NULL},
+	 { (char *)"delete_ws2811_t", _wrap_delete_ws2811_t, METH_VARARGS, NULL},
+	 { (char *)"ws2811_t_swigregister", ws2811_t_swigregister, METH_VARARGS, NULL},
+	 { (char *)"ws2811_init", _wrap_ws2811_init, METH_VARARGS, NULL},
+	 { (char *)"ws2811_fini", _wrap_ws2811_fini, METH_VARARGS, NULL},
+	 { (char *)"ws2811_render", _wrap_ws2811_render, METH_VARARGS, NULL},
+	 { (char *)"ws2811_wait", _wrap_ws2811_wait, METH_VARARGS, NULL},
+	 { (char *)"ws2811_get_return_t_str", _wrap_ws2811_get_return_t_str, METH_VARARGS, NULL},
+	 { (char *)"ws2811_set_custom_gamma_factor", _wrap_ws2811_set_custom_gamma_factor, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_hue_set", _wrap_color_hsv_hue_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_hue_get", _wrap_color_hsv_hue_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_h_set", _wrap_color_hsv_h_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_h_get", _wrap_color_hsv_h_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_saturation_set", _wrap_color_hsv_saturation_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_saturation_get", _wrap_color_hsv_saturation_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_sat_set", _wrap_color_hsv_sat_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_sat_get", _wrap_color_hsv_sat_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_s_set", _wrap_color_hsv_s_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_s_get", _wrap_color_hsv_s_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_value_set", _wrap_color_hsv_value_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_value_get", _wrap_color_hsv_value_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_val_set", _wrap_color_hsv_val_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_val_get", _wrap_color_hsv_val_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_v_set", _wrap_color_hsv_v_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_v_get", _wrap_color_hsv_v_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_raw_set", _wrap_color_hsv_raw_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_raw_get", _wrap_color_hsv_raw_get, METH_VARARGS, NULL},
+	 { (char *)"new_color_hsv", _wrap_new_color_hsv, METH_VARARGS, NULL},
+	 { (char *)"delete_color_hsv", _wrap_delete_color_hsv, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_swigregister", color_hsv_swigregister, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_hue_set", _wrap_color_hsv_float_hue_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_hue_get", _wrap_color_hsv_float_hue_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_h_set", _wrap_color_hsv_float_h_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_h_get", _wrap_color_hsv_float_h_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_saturation_set", _wrap_color_hsv_float_saturation_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_saturation_get", _wrap_color_hsv_float_saturation_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_sat_set", _wrap_color_hsv_float_sat_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_sat_get", _wrap_color_hsv_float_sat_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_s_set", _wrap_color_hsv_float_s_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_s_get", _wrap_color_hsv_float_s_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_value_set", _wrap_color_hsv_float_value_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_value_get", _wrap_color_hsv_float_value_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_val_set", _wrap_color_hsv_float_val_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_val_get", _wrap_color_hsv_float_val_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_v_set", _wrap_color_hsv_float_v_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_v_get", _wrap_color_hsv_float_v_get, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_raw_set", _wrap_color_hsv_float_raw_set, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_raw_get", _wrap_color_hsv_float_raw_get, METH_VARARGS, NULL},
+	 { (char *)"new_color_hsv_float", _wrap_new_color_hsv_float, METH_VARARGS, NULL},
+	 { (char *)"delete_color_hsv_float", _wrap_delete_color_hsv_float, METH_VARARGS, NULL},
+	 { (char *)"color_hsv_float_swigregister", color_hsv_float_swigregister, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_red_set", _wrap_color_rgb_red_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_red_get", _wrap_color_rgb_red_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_r_set", _wrap_color_rgb_r_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_r_get", _wrap_color_rgb_r_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_green_set", _wrap_color_rgb_green_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_green_get", _wrap_color_rgb_green_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_g_set", _wrap_color_rgb_g_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_g_get", _wrap_color_rgb_g_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_blue_set", _wrap_color_rgb_blue_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_blue_get", _wrap_color_rgb_blue_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_b_set", _wrap_color_rgb_b_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_b_get", _wrap_color_rgb_b_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_raw_set", _wrap_color_rgb_raw_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_raw_get", _wrap_color_rgb_raw_get, METH_VARARGS, NULL},
+	 { (char *)"new_color_rgb", _wrap_new_color_rgb, METH_VARARGS, NULL},
+	 { (char *)"delete_color_rgb", _wrap_delete_color_rgb, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_swigregister", color_rgb_swigregister, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_red_set", _wrap_color_rgb_float_red_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_red_get", _wrap_color_rgb_float_red_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_r_set", _wrap_color_rgb_float_r_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_r_get", _wrap_color_rgb_float_r_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_green_set", _wrap_color_rgb_float_green_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_green_get", _wrap_color_rgb_float_green_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_g_set", _wrap_color_rgb_float_g_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_g_get", _wrap_color_rgb_float_g_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_blue_set", _wrap_color_rgb_float_blue_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_blue_get", _wrap_color_rgb_float_blue_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_b_set", _wrap_color_rgb_float_b_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_b_get", _wrap_color_rgb_float_b_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_raw_set", _wrap_color_rgb_float_raw_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_raw_get", _wrap_color_rgb_float_raw_get, METH_VARARGS, NULL},
+	 { (char *)"new_color_rgb_float", _wrap_new_color_rgb_float, METH_VARARGS, NULL},
+	 { (char *)"delete_color_rgb_float", _wrap_delete_color_rgb_float, METH_VARARGS, NULL},
+	 { (char *)"color_rgb_float_swigregister", color_rgb_float_swigregister, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_red_set", _wrap_color_rgbw_float_red_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_red_get", _wrap_color_rgbw_float_red_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_r_set", _wrap_color_rgbw_float_r_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_r_get", _wrap_color_rgbw_float_r_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_green_set", _wrap_color_rgbw_float_green_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_green_get", _wrap_color_rgbw_float_green_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_g_set", _wrap_color_rgbw_float_g_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_g_get", _wrap_color_rgbw_float_g_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_blue_set", _wrap_color_rgbw_float_blue_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_blue_get", _wrap_color_rgbw_float_blue_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_b_set", _wrap_color_rgbw_float_b_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_b_get", _wrap_color_rgbw_float_b_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_white_set", _wrap_color_rgbw_float_white_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_white_get", _wrap_color_rgbw_float_white_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_w_set", _wrap_color_rgbw_float_w_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_w_get", _wrap_color_rgbw_float_w_get, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_raw_set", _wrap_color_rgbw_float_raw_set, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_raw_get", _wrap_color_rgbw_float_raw_get, METH_VARARGS, NULL},
+	 { (char *)"new_color_rgbw_float", _wrap_new_color_rgbw_float, METH_VARARGS, NULL},
+	 { (char *)"delete_color_rgbw_float", _wrap_delete_color_rgbw_float, METH_VARARGS, NULL},
+	 { (char *)"color_rgbw_float_swigregister", color_rgbw_float_swigregister, METH_VARARGS, NULL},
+	 { (char *)"ws2811_channel_get", _wrap_ws2811_channel_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_led_get", _wrap_ws2811_led_get, METH_VARARGS, NULL},
+	 { (char *)"ws2811_led_set", _wrap_ws2811_led_set, METH_VARARGS, NULL},
+	 { (char *)"unpack_rgb", _wrap_unpack_rgb, METH_VARARGS, NULL},
+	 { (char *)"pack_rgbw", _wrap_pack_rgbw, METH_VARARGS, NULL},
+	 { (char *)"scale_8", _wrap_scale_8, METH_VARARGS, NULL},
+	 { (char *)"clamp", _wrap_clamp, METH_VARARGS, NULL},
+	 { (char *)"blackbody_to_rgb", _wrap_blackbody_to_rgb, METH_VARARGS, NULL},
+	 { (char *)"blackbody_correction_rgb", _wrap_blackbody_correction_rgb, METH_VARARGS, NULL},
+	 { (char *)"render_hsv2rgb_rainbow_float", _wrap_render_hsv2rgb_rainbow_float, METH_VARARGS, NULL},
+	 { (char *)"render_rgb_float", _wrap_render_rgb_float, METH_VARARGS, NULL},
+	 { (char *)"render_rgbw_float", _wrap_render_rgbw_float, METH_VARARGS, NULL},
+	 { (char *)"ws2811_hsv_render_all_float", _wrap_ws2811_hsv_render_all_float, METH_VARARGS, NULL},
+	 { (char *)"ws2811_hsv_render_range_float", _wrap_ws2811_hsv_render_range_float, METH_VARARGS, NULL},
+	 { (char *)"ws2811_rgb_render_all_float", _wrap_ws2811_rgb_render_all_float, METH_VARARGS, NULL},
+	 { (char *)"ws2811_rgb_render_range_float", _wrap_ws2811_rgb_render_range_float, METH_VARARGS, NULL},
+	 { (char *)"ws2811_rgbw_render_range_float", _wrap_ws2811_rgbw_render_range_float, METH_VARARGS, NULL},
+	 { (char *)"ws2811_rgb_render_calibration", _wrap_ws2811_rgb_render_calibration, METH_VARARGS, NULL},
+	 { (char *)"float_to_int_1000", _wrap_float_to_int_1000, METH_VARARGS, NULL},
+	 { (char *)"float_to_int_1000_mirror", _wrap_float_to_int_1000_mirror, METH_VARARGS, NULL},
+	 { (char *)"wave_pulse", _wrap_wave_pulse, METH_VARARGS, NULL},
+	 { (char *)"wave_triangle", _wrap_wave_triangle, METH_VARARGS, NULL},
+	 { (char *)"wave_sine", _wrap_wave_sine, METH_VARARGS, NULL},
+	 { (char *)"wave_cubic", _wrap_wave_cubic, METH_VARARGS, NULL},
+	 { (char *)"plasma_sines", _wrap_plasma_sines, METH_VARARGS, NULL},
+	 { (char *)"plasma_sines_octave", _wrap_plasma_sines_octave, METH_VARARGS, NULL},
+	 { (char *)"fade", _wrap_fade, METH_VARARGS, NULL},
+	 { (char *)"lerp", _wrap_lerp, METH_VARARGS, NULL},
+	 { (char *)"grad", _wrap_grad, METH_VARARGS, NULL},
+	 { (char *)"perlin_noise_3d", _wrap_perlin_noise_3d, METH_VARARGS, NULL},
+	 { (char *)"fbm_noise_3d", _wrap_fbm_noise_3d, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -8153,6 +8782,7 @@ static swig_type_info _swigt__p_color_hsv = {"_p_color_hsv", "struct color_hsv *
 static swig_type_info _swigt__p_color_hsv_float = {"_p_color_hsv_float", "struct color_hsv_float *|color_hsv_float *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_color_rgb = {"_p_color_rgb", "struct color_rgb *|color_rgb *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_color_rgb_float = {"_p_color_rgb_float", "struct color_rgb_float *|color_rgb_float *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_color_rgbw_float = {"_p_color_rgbw_float", "struct color_rgbw_float *|color_rgbw_float *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "intptr_t *|int *|int_least32_t *|int_fast32_t *|int32_t *|int_fast16_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long_long = {"_p_long_long", "int_least64_t *|int_fast64_t *|int64_t *|long long *|intmax_t *", 0, 0, (void*)0, 0};
@@ -8174,6 +8804,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_color_hsv_float,
   &_swigt__p_color_rgb,
   &_swigt__p_color_rgb_float,
+  &_swigt__p_color_rgbw_float,
   &_swigt__p_float,
   &_swigt__p_int,
   &_swigt__p_long_long,
@@ -8195,6 +8826,7 @@ static swig_cast_info _swigc__p_color_hsv[] = {  {&_swigt__p_color_hsv, 0, 0, 0}
 static swig_cast_info _swigc__p_color_hsv_float[] = {  {&_swigt__p_color_hsv_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_color_rgb[] = {  {&_swigt__p_color_rgb, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_color_rgb_float[] = {  {&_swigt__p_color_rgb_float, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_color_rgbw_float[] = {  {&_swigt__p_color_rgbw_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long_long[] = {  {&_swigt__p_long_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -8216,6 +8848,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_color_hsv_float,
   _swigc__p_color_rgb,
   _swigc__p_color_rgb_float,
+  _swigc__p_color_rgbw_float,
   _swigc__p_float,
   _swigc__p_int,
   _swigc__p_long_long,
@@ -8770,9 +9403,9 @@ extern "C" {
             char *ndoc = (char*)malloc(ldoc + lptr + 10);
             if (ndoc) {
               char *buff = ndoc;
-              memcpy(buff, methods[i].ml_doc, ldoc);
+              strncpy(buff, methods[i].ml_doc, ldoc);
               buff += ldoc;
-              memcpy(buff, "swig_ptr: ", 10);
+              strncpy(buff, "swig_ptr: ", 10);
               buff += 10;
               SWIG_PackVoidPtr(buff, ptr, ty->name, lptr);
               methods[i].ml_doc = ndoc;
@@ -8834,8 +9467,8 @@ SWIG_init(void) {
     (char *)"this", &SwigPyBuiltin_ThisClosure, NULL, NULL, NULL
   };
   static SwigPyGetSet thisown_getset_closure = {
-    SwigPyObject_own,
-    SwigPyObject_own
+    (PyCFunction) SwigPyObject_own,
+    (PyCFunction) SwigPyObject_own
   };
   static PyGetSetDef thisown_getset_def = {
     (char *)"thisown", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, NULL, &thisown_getset_closure

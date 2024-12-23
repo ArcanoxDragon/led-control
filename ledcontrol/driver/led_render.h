@@ -292,6 +292,22 @@ uint32_t render_rgb_float(color_rgb_float rgb, color_rgb corr_rgb,
   return pack_rgbw(r8, g8, b8, w8);
 }
 
+// Render float RGBW to LEDs
+uint32_t render_rgbw_float(color_rgbw_float rgb, float brightness) {
+  float r = clamp(rgb.r, 0, 1);
+  float g = clamp(rgb.g, 0, 1);
+  float b = clamp(rgb.b, 0, 1);
+  float w = clamp(rgb.w, 0, 1);
+
+  uint8_t r8 = r * brightness * 255;
+  uint8_t g8 = g * brightness * 255;
+  uint8_t b8 = b * brightness * 255;
+  uint8_t w8 = w * brightness * 255;
+
+  if (debug) printf("%d %d %d %d\n", r8, g8, b8, w8);
+  return pack_rgbw(r8, g8, b8, w8);
+}
+
 // Render array of hsv pixels and display
 int ws2811_hsv_render_all_float(ws2811_t *ws, ws2811_channel_t *channel,
                                 color_hsv_float values[], int count,
@@ -353,6 +369,17 @@ void ws2811_rgb_render_range_float(ws2811_channel_t *channel,
     channel->leds[i] = render_rgb_float(values[i - start], corr_rgb,
                                         saturation, brightness,
                                         has_white);
+  }
+}
+
+// Render array of rgbw pixels and display
+void ws2811_rgbw_render_range_float(ws2811_channel_t *channel,
+                                   color_rgbw_float values[], int start, int end,
+                                   float brightness) {
+  if (end > channel->count) return;
+  for (int i = start; i < end; i++) {
+    channel->leds[i] = render_rgbw_float(values[i - start],
+                                        brightness);
   }
 }
 

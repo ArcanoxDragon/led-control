@@ -89,4 +89,28 @@ typedef struct color_rgb_float {
   };
 } color_rgb_float;
 
+typedef struct color_rgbw_float {
+  union {
+    struct {
+      union {
+        float red;
+        float r;
+      };
+      union {
+        float green;
+        float g;
+      };
+      union {
+        float blue;
+        float b;
+      };
+      union {
+        float white;
+        float w;
+      };
+    };
+    float raw[4];
+  };
+} color_rgbw_float;
+
 #endif
