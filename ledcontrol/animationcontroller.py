@@ -408,7 +408,7 @@ class AnimationController:
 
                     else:
                         safe_range_start = min(len(self._sacn_buffer) - 1, range_start)
-                        safe_range_end = min(len(self._sacn_buffer) - 1, range_end)
+                        safe_range_end = min(len(self._sacn_buffer), range_end) # end is exclusive
 
                         self._led_controller.set_range(
                             [self._sacn_buffer[i] for i in range(safe_range_start, safe_range_end)],
