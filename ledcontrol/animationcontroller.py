@@ -17,6 +17,10 @@ import ledcontrol.colorpalettes as colorpalettes
 import ledcontrol.driver as driver
 import ledcontrol.utils as utils
 
+MAX_CHANNELS_PER_UNIVERSE = 512
+MAX_LEDS_PER_UNIVERSE = math.floor(MAX_CHANNELS_PER_UNIVERSE / 3)
+MAX_USABLE_CHANNELS_PER_UNIVERSE = MAX_LEDS_PER_UNIVERSE * 3
+
 class AnimationController:
     def __init__(self,
                  led_controller,
@@ -202,7 +206,7 @@ class AnimationController:
                 elif k == 'sacn' and self._enable_sacn:
                     if v:
                         self._receiver = sacn.sACNreceiver()
-                        self._receiver.listen_on('universe', universe=1)(self._sacn_callback)
+                        self._receiver.listen_on('availability')(self._sacn_availability_callback)
                         self._receiver.start()
                     elif hasattr(self, '_receiver'):
                         self._receiver.stop()
@@ -403,10 +407,13 @@ class AnimationController:
                         )
 
                     else:
+                        safe_range_start = min(len(self._sacn_buffer) - 1, range_start)
+                        safe_range_end = min(len(self._sacn_buffer), range_end) # end is exclusive
+
                         self._led_controller.set_range(
-                            [self._sacn_buffer[i] for i in range(range_start, range_end)],
-                            range_start,
-                            range_end,
+                            [self._sacn_buffer[i] for i in range(safe_range_start, safe_range_end)],
+                            safe_range_start,
+                            safe_range_end,
                             self._correction,
                             1.0,
                             self._settings['global_brightness'],
@@ -443,7 +450,13 @@ class AnimationController:
 
             self._led_controller.render()
 
-    def _sacn_callback(self, packet):
+    def _sacn_availability_callback(self, universe, changed):
+        if changed == "available":
+            self._receiver.register_listener('universe', self._sacn_universe_callback, universe=universe)
+        else:
+            self._receiver.remove_listener_from_universe(universe)
+
+    def _sacn_universe_callback(self, packet):
         'Callback for sACN / E1.31 client'
         sacn_time = time.perf_counter()
         self._sacn_perf_avg += (sacn_time - self._last_sacn_time)
@@ -454,8 +467,29 @@ class AnimationController:
             print('Average sACN rate (packets/s): {}'.format(1 / (self._sacn_perf_avg / 100)))
             self._sacn_perf_avg = 0
 
-        data = [x / 255.0 for x in packet.dmxData[:self._led_count * 3]]
-        self._sacn_buffer = list(zip_longest(*(iter(data),) * 3))
+        dmx_led_count = math.floor(len(packet.dmxData) / 3)
+        led_start = (packet.universe - 1) * MAX_LEDS_PER_UNIVERSE
+        led_end = led_start + dmx_led_count - 1 # with one LED's worth of data, start == end
+
+        if led_start >= self._led_count:
+            return
+
+        safe_led_end = min(self._led_count - 1, led_end)
+        safe_led_count = (safe_led_end - led_start) + 1
+        current_len = len(self._sacn_buffer)
+        needed_len = safe_led_end + 1
+
+        while current_len < needed_len:
+            print(f"current_len = {current_len}, needed_len = {needed_len}, resizing to {current_len * 2}")
+            # double the buffer size
+            self._sacn_buffer.extend([(0, 0, 0)] * current_len)
+
+        for i in range(0, safe_led_count):
+            dmx_index = i * 3
+            r = packet.dmxData[dmx_index] / 255.0
+            g = packet.dmxData[dmx_index + 1] / 255.0
+            b = packet.dmxData[dmx_index + 2] / 255.0
+            self._sacn_buffer[led_start + i] = (r, g, b)
 
     def clear_leds(self):
         'Turn all LEDs off'
