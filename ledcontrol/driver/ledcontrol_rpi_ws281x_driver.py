@@ -456,6 +456,60 @@ class color_rgb_float(_object):
 color_rgb_float_swigregister = _ledcontrol_rpi_ws281x_driver.color_rgb_float_swigregister
 color_rgb_float_swigregister(color_rgb_float)
 
+class color_rgbw_float(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, color_rgbw_float, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, color_rgbw_float, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["red"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_red_set
+    __swig_getmethods__["red"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_red_get
+    if _newclass:
+        red = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_red_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_red_set)
+    __swig_setmethods__["r"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_r_set
+    __swig_getmethods__["r"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_r_get
+    if _newclass:
+        r = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_r_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_r_set)
+    __swig_setmethods__["green"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_green_set
+    __swig_getmethods__["green"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_green_get
+    if _newclass:
+        green = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_green_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_green_set)
+    __swig_setmethods__["g"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_g_set
+    __swig_getmethods__["g"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_g_get
+    if _newclass:
+        g = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_g_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_g_set)
+    __swig_setmethods__["blue"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_blue_set
+    __swig_getmethods__["blue"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_blue_get
+    if _newclass:
+        blue = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_blue_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_blue_set)
+    __swig_setmethods__["b"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_b_set
+    __swig_getmethods__["b"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_b_get
+    if _newclass:
+        b = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_b_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_b_set)
+    __swig_setmethods__["white"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_white_set
+    __swig_getmethods__["white"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_white_get
+    if _newclass:
+        white = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_white_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_white_set)
+    __swig_setmethods__["w"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_w_set
+    __swig_getmethods__["w"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_w_get
+    if _newclass:
+        w = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_w_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_w_set)
+    __swig_setmethods__["raw"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_raw_set
+    __swig_getmethods__["raw"] = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_raw_get
+    if _newclass:
+        raw = _swig_property(_ledcontrol_rpi_ws281x_driver.color_rgbw_float_raw_get, _ledcontrol_rpi_ws281x_driver.color_rgbw_float_raw_set)
+
+    def __init__(self):
+        this = _ledcontrol_rpi_ws281x_driver.new_color_rgbw_float()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _ledcontrol_rpi_ws281x_driver.delete_color_rgbw_float
+    __del__ = lambda self: None
+color_rgbw_float_swigregister = _ledcontrol_rpi_ws281x_driver.color_rgbw_float_swigregister
+color_rgbw_float_swigregister(color_rgbw_float)
+
 
 def ws2811_channel_get(ws, channelnum):
     return _ledcontrol_rpi_ws281x_driver.ws2811_channel_get(ws, channelnum)
@@ -501,6 +555,10 @@ def render_rgb_float(rgb, corr_rgb, saturation, brightness, has_white):
     return _ledcontrol_rpi_ws281x_driver.render_rgb_float(rgb, corr_rgb, saturation, brightness, has_white)
 render_rgb_float = _ledcontrol_rpi_ws281x_driver.render_rgb_float
 
+def render_rgbw_float(rgb, brightness):
+    return _ledcontrol_rpi_ws281x_driver.render_rgbw_float(rgb, brightness)
+render_rgbw_float = _ledcontrol_rpi_ws281x_driver.render_rgbw_float
+
 def ws2811_hsv_render_all_float(ws, channel, values, count, correction, saturation, brightness, gamma, has_white):
     return _ledcontrol_rpi_ws281x_driver.ws2811_hsv_render_all_float(ws, channel, values, count, correction, saturation, brightness, gamma, has_white)
 ws2811_hsv_render_all_float = _ledcontrol_rpi_ws281x_driver.ws2811_hsv_render_all_float
@@ -516,6 +574,10 @@ ws2811_rgb_render_all_float = _ledcontrol_rpi_ws281x_driver.ws2811_rgb_render_al
 def ws2811_rgb_render_range_float(channel, values, start, end, correction, saturation, brightness, gamma, has_white):
     return _ledcontrol_rpi_ws281x_driver.ws2811_rgb_render_range_float(channel, values, start, end, correction, saturation, brightness, gamma, has_white)
 ws2811_rgb_render_range_float = _ledcontrol_rpi_ws281x_driver.ws2811_rgb_render_range_float
+
+def ws2811_rgbw_render_range_float(channel, values, start, end, brightness):
+    return _ledcontrol_rpi_ws281x_driver.ws2811_rgbw_render_range_float(channel, values, start, end, brightness)
+ws2811_rgbw_render_range_float = _ledcontrol_rpi_ws281x_driver.ws2811_rgbw_render_range_float
 
 def ws2811_rgb_render_calibration(ws, channel, count, correction, brightness):
     return _ledcontrol_rpi_ws281x_driver.ws2811_rgb_render_calibration(ws, channel, count, correction, brightness)

@@ -75,6 +75,33 @@
   PyList_SetItem($result, 2, PyFloat_FromDouble($1.b));
 }
 
+%typemap(in) color_rgbw_float values[ANY] {
+  int len = PyObject_Length($input);
+  $1 = malloc(sizeof(color_rgbw_float) * len);
+  int i, j;
+  for (i = 0; i < len; i++) {
+    PyObject *o = PySequence_GetItem($input, i);
+    for (j = 0; j < 4; j++) {
+      PyObject *o2 = PySequence_GetItem(o, j);
+      $1[i].raw[j] = (float)PyFloat_AsDouble(o2);
+      Py_DECREF(o2);
+    }
+    Py_DECREF(o);
+  }
+}
+
+%typemap(freearg) color_rgbw_float values[ANY] {
+   if ($1) free($1);
+}
+
+%typemap(out) color_rgbw_float {
+  $result = PyList_New(4);
+  PyList_SetItem($result, 0, PyFloat_FromDouble($1.r));
+  PyList_SetItem($result, 1, PyFloat_FromDouble($1.g));
+  PyList_SetItem($result, 2, PyFloat_FromDouble($1.b));
+  PyList_SetItem($result, 3, PyFloat_FromDouble($1.w));
+}
+
 %{
 static int convert_iarray_32(PyObject *input, uint32_t *ptr, int size) {
   int i;

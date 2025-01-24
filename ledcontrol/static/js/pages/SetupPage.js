@@ -8,6 +8,7 @@ export default {
   data() {
     return {
       sacn: store.get('sacn'),
+      sacnMode: store.get('sacn_mode'),
       calibration: store.get('calibration'),
       groupListKey: 0,
     }
@@ -20,6 +21,9 @@ export default {
   methods: {
     updateSACN() {
       store.set('sacn', parseInt(this.sacn, 10));
+    },
+    updateSACNMode() {
+      store.set('sacn_mode', this.sacnMode);
     },
     updateCalibration() {
       store.set('calibration', parseInt(this.calibration, 10));
@@ -84,6 +88,19 @@ export default {
         >
           <option value="0">Off</option>
           <option value="1">On</option>
+        </select>
+      </span>
+    </div>
+    <div class="input-row input-row-top-margin input-toplevel">
+      <span class="label select-label">sACN Mode:</span>
+      <span class="select-container">
+        <select
+          autocomplete="off"
+          v-model="sacnMode"
+          @change="updateSACNMode"
+        >
+          <option value="rgb">RGB</option>
+          <option value="rgbw">RGBW</option>
         </select>
       </span>
     </div>

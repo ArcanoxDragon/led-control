@@ -141,6 +141,12 @@ class LEDController:
             self._send(packet, render_mode, render_target)
             self._send(b'\x00\x03\x00\x05\x00', render_mode, render_target)
 
+    def set_range_rgbw(self, pixels, start, end, brightness):
+        if driver.is_raspberrypi():
+            driver.ws2811_rgbw_render_range_float(self._channel, pixels,
+                                                    start, end,
+                                                    brightness)
+
     def show_calibration_color(self, count, correction, brightness,
                                render_mode, render_target):
         if render_mode == TargetMode.local:

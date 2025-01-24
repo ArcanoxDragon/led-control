@@ -18,8 +18,8 @@ import ledcontrol.driver as driver
 import ledcontrol.utils as utils
 
 MAX_CHANNELS_PER_UNIVERSE = 512
-MAX_LEDS_PER_UNIVERSE = math.floor(MAX_CHANNELS_PER_UNIVERSE / 3)
-MAX_USABLE_CHANNELS_PER_UNIVERSE = MAX_LEDS_PER_UNIVERSE * 3
+MAX_LEDS_PER_UNIVERSE_RGB = math.floor(MAX_CHANNELS_PER_UNIVERSE / 3)
+MAX_LEDS_PER_UNIVERSE_RGBW = math.floor(MAX_CHANNELS_PER_UNIVERSE / 4)
 
 class AnimationController:
     def __init__(self,
@@ -58,6 +58,7 @@ class AnimationController:
             'global_color_b': 170,
             'global_saturation': 1.0,
             'sacn': 0,
+            'sacn_mode': 'rgb',
             'calibration': 0,
             'groups': {
                 'main': {
@@ -210,6 +211,9 @@ class AnimationController:
                         self._receiver.start()
                     elif hasattr(self, '_receiver'):
                         self._receiver.stop()
+                elif k == 'sacn_mode' and self._enable_sacn:
+                    dummy_elem = (0, 0, 0, 0) if v == 'rgbw' else (0, 0, 0)
+                    self._sacn_buffer = [dummy_elem] * len(self._sacn_buffer)
 
             return d1
 
@@ -410,17 +414,27 @@ class AnimationController:
                         safe_range_start = min(len(self._sacn_buffer) - 1, range_start)
                         safe_range_end = min(len(self._sacn_buffer), range_end) # end is exclusive
 
-                        self._led_controller.set_range(
-                            [self._sacn_buffer[i] for i in range(safe_range_start, safe_range_end)],
-                            safe_range_start,
-                            safe_range_end,
-                            self._correction,
-                            1.0,
-                            self._settings['global_brightness'],
-                            animfunctions.ColorMode.rgb,
-                            settings['render_mode'],
-                            settings['render_target']
-                        )
+                        if len(self._sacn_buffer) > 0 and len(self._sacn_buffer[0]) > 3:
+                            # 4-tuple, render as RGBW
+                            self._led_controller.set_range_rgbw(
+                                [self._sacn_buffer[i] for i in range(safe_range_start, safe_range_end)],
+                                safe_range_start,
+                                safe_range_end,
+                                self._settings['global_brightness']
+                            )
+                        else:
+                            # 3-tuple, render as RGB with calibration
+                            self._led_controller.set_range(
+                                [self._sacn_buffer[i] for i in range(safe_range_start, safe_range_end)],
+                                safe_range_start,
+                                safe_range_end,
+                                self._correction,
+                                1.0,
+                                self._settings['global_brightness'],
+                                animfunctions.ColorMode.rgb,
+                                settings['render_mode'],
+                                settings['render_target']
+                            )
 
                 except Exception as e:
                     msg = traceback.format_exception(type(e), e, e.__traceback__)
@@ -467,8 +481,11 @@ class AnimationController:
             print('Average sACN rate (packets/s): {}'.format(1 / (self._sacn_perf_avg / 100)))
             self._sacn_perf_avg = 0
 
-        dmx_led_count = math.floor(len(packet.dmxData) / 3)
-        led_start = (packet.universe - 1) * MAX_LEDS_PER_UNIVERSE
+        is_rgbw = self._settings['sacn_mode'] == 'rgbw'
+        chans_per_led = 4 if is_rgbw else 3
+        max_leds_per_universe = MAX_LEDS_PER_UNIVERSE_RGBW if is_rgbw else MAX_LEDS_PER_UNIVERSE_RGB
+        dmx_led_count = math.floor(len(packet.dmxData) / chans_per_led)
+        led_start = (packet.universe - 1) * max_leds_per_universe
         led_end = led_start + dmx_led_count - 1 # with one LED's worth of data, start == end
 
         if led_start >= self._led_count:
@@ -482,18 +499,25 @@ class AnimationController:
         while current_len < needed_len:
             print(f"current_len = {current_len}, needed_len = {needed_len}, resizing to {current_len * 2}")
             # double the buffer size
-            self._sacn_buffer.extend([(0, 0, 0)] * current_len)
+            element = (0, 0, 0, 0) if is_rgbw else (0, 0, 0)
+            self._sacn_buffer.extend([element] * current_len)
 
         for i in range(0, safe_led_count):
-            dmx_index = i * 3
+            dmx_index = i * chans_per_led
             r = packet.dmxData[dmx_index] / 255.0
             g = packet.dmxData[dmx_index + 1] / 255.0
             b = packet.dmxData[dmx_index + 2] / 255.0
-            self._sacn_buffer[led_start + i] = (r, g, b)
+
+            if is_rgbw:
+                w = packet.dmxData[dmx_index + 3] / 255.0
+                self._sacn_buffer[led_start + i] = (r, g, b, w)
+            else:
+                self._sacn_buffer[led_start + i] = (r, g, b)
 
     def clear_leds(self):
         'Turn all LEDs off'
         for group, settings in list(self._settings['groups'].items()):
+
             self._led_controller.set_range(
                 [(0, 0, 0) for i in range(self._led_count)],
                 0,
